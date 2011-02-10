@@ -89,6 +89,11 @@ class EpiCurl
     }
     return false;
   }
+  
+  public function cleanupResponses()
+  {
+    $this->responses = array();
+  }
 
   private function getKey($ch)
   {
