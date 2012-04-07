@@ -58,7 +58,7 @@ class EpiCurl
   {
     if($key != null)
     {
-      if(isset($this->responses[$key]))
+      if(isset($this->responses[$key]['data']))
       {
         return $this->responses[$key];
       }
