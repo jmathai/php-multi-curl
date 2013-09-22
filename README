@@ -5,18 +5,17 @@ One of the key aspects that differentiates it from many similar multi curl libra
 Usage
 <?php
   $mc = EpiCurl::getInstance();
-  $ch = curl_init('http://www.yahoo.com/');
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  $yahoo = $mc->addCurl($ch);
-  $ch = curl_init('http://www.google.com/');
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  $google = $mc->addCurl($ch);
+  $yahoo = $mc->addURL('http://www.yahoo.com/');
+  $google = $mc->addURL('http://www.google.com/');
 
   echo "The response code for Yahoo! was {$yahoo->code} and Google was {$google->code}";
 ?>
 
 Authors
    * jmathai
+   
+Contributors
+   * Lewis Cowles (LewisCowles1986) - Usability for adding url's without needing to worry about CURL, but provisioning also for specifying additional parameters
 
 Documentation:
    * http://wiki.github.com/jmathai/php-multi-curl
