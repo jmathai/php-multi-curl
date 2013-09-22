@@ -35,7 +35,7 @@ class EpiCurl
   public function addURL($url,$options=array()) {
     $ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		foreach($curlparams as $option=>$value) {
+		foreach($options as $option=>$value) {
 			curl_setopt($ch, $option, $value);
 		}
 		return $this->addCurl($ch);
