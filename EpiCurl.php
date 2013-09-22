@@ -30,6 +30,16 @@ class EpiCurl
       'url'   => CURLINFO_EFFECTIVE_URL
       );
   }
+  
+  // simplifies example and allows for additional curl options to be passed in via array
+  public function addURL($url,$options=array()) {
+    $ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		foreach($curlparams as $option=>$value) {
+			curl_setopt($ch, $option, $value);
+		}
+		return $this->addCurl($ch);
+  }
 
   public function addCurl($ch)
   {
