@@ -3,6 +3,7 @@ PHP-multi-curl is a high performance multi curl library which can be used to par
 One of the key aspects that differentiates it from many similar multi curl libraries is that it allows you to cherry pick responses.  You can fire off 10 http calls and retrieve results for a specific one without having to wait for all 10 to be completed.  If you rely heavily on web services (as I do) then it'll be a tool you can't live without.
 
 Usage
+```
 <?php
   $mc = EpiCurl::getInstance();
   $yahoo = $mc->addURL('http://www.yahoo.com/');
@@ -10,7 +11,7 @@ Usage
 
   echo "The response code for Yahoo! was {$yahoo->code} and Google was {$google->code}";
 ?>
-
+```
 Authors
    * jmathai
    
