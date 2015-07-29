@@ -1,4 +1,9 @@
 <?php
+
+namespace jmathai\php_multi_curl;
+
+use Exception;
+
 class EpiCurl
 {
   const timeout = 3;
