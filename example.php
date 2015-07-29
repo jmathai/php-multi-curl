@@ -1,4 +1,5 @@
 <?php
+use jmathai\php_multi_curl\EpiCurl;
 include './EpiCurl.php';
 $mc = EpiCurl::getInstance();
 
