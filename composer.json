@@ -1,0 +1,21 @@
+{
+    "name": "jmathai/php-multi-curl",
+    "description": "A high performance PHP library for using multi curl for parallel http calls.",
+    "type": "library",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Jaisen Mathai",
+            "email": "jaisen@jmathai.com"
+        }
+    ],
+    "require": {
+        "php": ">= 5.3.0"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+          "jmathai\\php_multi_curl\\": ""
+        }
+    }
+  }
