@@ -1,9 +1,9 @@
 <?php
-class EpiCurl
+
+require_once('Singleton.php');
+class EpiCurl extends Singleton
 {
   const timeout = 3;
-  static $inst = null;
-  static $singleton = 0;
   private $mc;
   private $msgs;
   private $running;
@@ -14,13 +14,8 @@ class EpiCurl
   private $responses = array();
   private $properties = array();
 
-  function __construct()
+  protected function __construct()
   {
-    if(self::$singleton == 0)
-    {
-      throw new Exception('This class cannot be instantiated by the new keyword.  You must instantiate it using: $obj = EpiCurl::getInstance();');
-    }
-
     $this->mc = curl_multi_init();
     $this->properties = array(
       'code'  => CURLINFO_HTTP_CODE,
@@ -136,17 +131,6 @@ class EpiCurl
       curl_multi_remove_handle($this->mc, $done['handle']);
       curl_close($done['handle']);
     }
-  }
-
-  static function getInstance()
-  {
-    if(self::$inst == null)
-    {
-      self::$singleton = 1;
-      self::$inst = new EpiCurl();
-    }
-
-    return self::$inst;
   }
 }
 
