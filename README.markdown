@@ -17,6 +17,7 @@ Authors
    
 Contributors
    * Lewis Cowles (LewisCowles1986) - Usability for adding url's without needing to worry about CURL, but provisioning also for specifying additional parameters
+   * Sam Thomson (samthomson) - Packaged it up
 
 Documentation:
    * http://wiki.github.com/jmathai/php-multi-curl
