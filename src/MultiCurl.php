@@ -14,20 +14,20 @@ if(!class_exists('MultiCurlException'))
 class MultiCurl
 {
   const timeout = 3;
-  static $inst = null;
-  static $singleton = 0;
+  private static $inst = null;
+  /* @TODO make this private and add a method to set it to 0 */
+  public static $singleton = 0;
+
   private $mc;
-  private $msgs;
   private $running;
   private $execStatus;
-  private $selectStatus;
   private $sleepIncrement = 1.1;
   private $requests = array();
   private $responses = array();
   private $properties = array();
   private static $timers = array();
 
-  function __construct()
+  public function __construct()
   {
     if(self::$singleton === 0)
     {
@@ -74,7 +74,7 @@ class MultiCurl
     {
       do
       {
-          $code = $this->execStatus = curl_multi_exec($this->mc, $this->running);
+        $this->execStatus = curl_multi_exec($this->mc, $this->running);
       } while ($this->execStatus === CURLM_CALL_MULTI_PERFORM);
 
       return new MultiCurlManager($key);
@@ -122,7 +122,6 @@ class MultiCurl
         {
           return $this->responses[$key];
         }
-        $runningCurrent = $this->running;
       }
       return null;
     }
@@ -203,7 +202,7 @@ class MultiCurl
       self::$timers[$key]['code'] = curl_getinfo($done['handle'], CURLINFO_HTTP_CODE);
   }
 
-  static function getInstance()
+  public static function getInstance()
   {
     if(self::$inst == null)
     {

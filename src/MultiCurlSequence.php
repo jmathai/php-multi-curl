@@ -6,7 +6,13 @@
  */
 class MultiCurlSequence
 {
-  private $timers, $min, $max, $width = 100;
+  private $width = 100;
+  private $timers;
+  private $min;
+  private $max;
+  private $range;
+  private $step;
+
   public function __construct($timers) 
   {
     $this->timers = $timers;
