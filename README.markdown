@@ -2,6 +2,8 @@ PHP-multi-curl
 ==============
 High performance PHP curl wrapper to make parallel HTTP calls
 
+[![Build Status](https://travis-ci.org/jmathai/php-multi-curl.svg)](https://travis-ci.org/jmathai/php-multi-curl) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jmathai/php-multi-curl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jmathai/php-multi-curl/?branch=master)
+
 ## Contents
 
 * [Installation](#installation)
