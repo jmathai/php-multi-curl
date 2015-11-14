@@ -1,5 +1,17 @@
-<?php
-class EpiCurl
+<?php namespace JMathai\PhpMultiCurl;
+/*if(!class_exists('MultiCurlManager'))
+  include 'MultiCurlManager.php';
+if(!class_exists('MultiCurlSequence'))
+  include 'MultiCurlSequence.php';
+if(!class_exists('MultiCurlException'))
+  include 'MultiCurlException.php';*/
+
+/**
+ * MultiCurl multicurl http client
+ *
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
+class MultiCurl
 {
   const timeout = 3;
   static $inst = null;
@@ -17,9 +29,9 @@ class EpiCurl
 
   function __construct()
   {
-    if(self::$singleton == 0)
+    if(self::$singleton === 0)
     {
-      EpiException::raise(new EpiException('This class cannot be instantiated by the new keyword.  You must instantiate it using: $obj = EpiCurl::getInstance();'));
+      throw new MultiCurlException('This class cannot be instantiated by the new keyword.  You must instantiate it using: $obj = MultiCurl::getInstance();');
     }
 
     $this->mc = curl_multi_init();
@@ -32,15 +44,14 @@ class EpiCurl
       );
   }
 
-  public function addEasyCurl($ch)
+  public function addURL($url, $options = array())
   {
-    $key = $this->getKey($ch);
-    $this->requests[$key] = $ch;
-    curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
-    $done = array('handle' => $ch);
-    $this->storeResponse($done, false);
-    $this->startTimer($key);
-    return new EpiCurlManager($key);
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    foreach($options as $option=>$value) {
+        curl_setopt($ch, $option, $value);
+    }
+    return $this->addCurl($ch);
   }
 
   public function addCurl($ch)
@@ -51,7 +62,7 @@ class EpiCurl
 
     $code = curl_multi_add_handle($this->mc, $ch);
     $this->startTimer($key);
-
+    
     // (1)
     if($code === CURLM_OK || $code === CURLM_CALL_MULTI_PERFORM)
     {
@@ -59,7 +70,7 @@ class EpiCurl
           $code = $this->execStatus = curl_multi_exec($this->mc, $this->running);
       } while ($this->execStatus === CURLM_CALL_MULTI_PERFORM);
 
-      return new EpiCurlManager($key);
+      return new MultiCurlManager($key);
     }
     else
     {
@@ -71,7 +82,7 @@ class EpiCurl
   {
     if($key != null)
     {
-      if(isset($this->responses[$key]))
+      if(isset($this->responses[$key]['code']))
       {
         return $this->responses[$key];
       }
@@ -82,7 +93,15 @@ class EpiCurl
         usleep(intval($outerSleepInt));
         $outerSleepInt = intval(max(1, ($outerSleepInt*$this->sleepIncrement)));
         $ms=curl_multi_select($this->mc, 0);
-        if($ms > 0)
+
+        // bug in PHP 5.3.18+ where curl_multi_select can return -1
+        // https://bugs.php.net/bug.php?id=63411
+        if($ms === -1)
+          usleep(100000);
+
+        // see pull request https://github.com/jmathai/php-multi-curl/pull/17
+        // details here http://curl.haxx.se/libcurl/c/libcurl-errors.html
+        if($ms >= CURLM_CALL_MULTI_PERFORM)
         {
           do{
             $this->execStatus = curl_multi_exec($this->mc, $this->running);
@@ -105,12 +124,17 @@ class EpiCurl
 
   public static function getSequence()
   {
-    return new EpiSequence(self::$timers);
+    return new MultiCurlSequence(self::$timers);
   }
 
   public static function getTimers()
   {
     return self::$timers;
+  }
+
+  public function inject($key, $value)
+  {
+    $this->$key = $value;
   }
 
   private function getKey($ch)
@@ -148,6 +172,8 @@ class EpiCurl
     else
       $this->responses[$key]['data'] = curl_exec($done['handle']);
 
+    $this->responses[$key]['response'] = $this->responses[$key]['data'];
+
     foreach($this->properties as $name => $const)
     {
       $this->responses[$key][$name] = curl_getinfo($done['handle'], $const);
@@ -175,40 +201,11 @@ class EpiCurl
     if(self::$inst == null)
     {
       self::$singleton = 1;
-      self::$inst = new EpiCurl();
+      self::$inst = new MultiCurl();
     }
 
     return self::$inst;
   }
-}
-
-class EpiCurlManager
-{
-  private $key;
-  private $epiCurl;
-
-  public function __construct($key)
-  {
-    $this->key = $key;
-    $this->epiCurl = EpiCurl::getInstance();
-  }
-
-  public function __get($name)
-  {
-    $responses = $this->epiCurl->getResult($this->key);
-    return isset($responses[$name]) ? $responses[$name] : null;
-  }
-
-  public function __isset($name)
-  {
-    $val = self::__get($name);
-    return empty($val);
-  }
-}
-
-function getCurl()
-{
-  return EpiCurl::getInstance();
 }
 
 /*
