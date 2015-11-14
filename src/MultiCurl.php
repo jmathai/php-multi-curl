@@ -44,7 +44,7 @@ class MultiCurl
       );
   }
 
-  public function addURL($url, $options = array())
+  public function addUrl($url, $options = array())
   {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
