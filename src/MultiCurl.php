@@ -48,7 +48,8 @@ class MultiCurl
   {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    foreach($options as $option=>$value) {
+    foreach($options as $option=>$value)
+    {
         curl_setopt($ch, $option, $value);
     }
     return $this->addCurl($ch);
@@ -56,6 +57,11 @@ class MultiCurl
 
   public function addCurl($ch)
   {
+    if(gettype($ch) !== 'resource')
+    {
+      throw new MultiCurlInvalidParameterException('Parameter must be a valid curl handle');
+    }
+
     $key = $this->getKey($ch);
     $this->requests[$key] = $ch;
     curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
@@ -66,7 +72,8 @@ class MultiCurl
     // (1)
     if($code === CURLM_OK || $code === CURLM_CALL_MULTI_PERFORM)
     {
-      do {
+      do
+      {
           $code = $this->execStatus = curl_multi_exec($this->mc, $this->running);
       } while ($this->execStatus === CURLM_CALL_MULTI_PERFORM);
 

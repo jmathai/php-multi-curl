@@ -33,4 +33,13 @@ class CallsTest extends PHPUnit_Framework_TestCase
     $response = json_decode($call->response, true);
     $this->assertInternalType('array', $response);
   }
+
+  public function testResponseHeaders()
+  {
+    $mc = MultiCurl::getInstance();
+    $google = $mc->addUrl('http://www.example.com/404');
+    
+    $this->assertInternalType('array', $google->headers);
+    $this->assertNotEmpty($google->headers['Etag']);
+  }
 }
