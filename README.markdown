@@ -24,7 +24,7 @@ High performance PHP curl wrapper to make parallel HTTP calls
 You can use composer to install this library from the command line.
 
 ```
-composer install jmathai/php-multi-curl
+composer require jmathai/php-multi-curl
 ```
 
 ## Usage
