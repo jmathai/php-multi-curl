@@ -30,7 +30,7 @@ composer require jmathai/php-multi-curl
 ## Usage
 
 Basic usage can be done using the `addUrl($url/*, $options*/)` method. This calls `GET $url` by passing in `$options` as the parameters.
-```
+```php
 <?php
   // Include Composer's autoload file if not already included.
   require '../vendor/autoload.php';
@@ -69,7 +69,7 @@ Call 1: in maiores et
 
 You'll most likely want to configure your cURL calls for your specific purpose. This includes setting the call's HTTP method, parameters, headers and more. You can use the `addCurl($ch)` method and configuring your curl handle using any of PHP's `curl_*` functions.
 
-```
+```php
 <?php
   $mc = JMathai\PhpMultiCurl\MultiCurl::getInstance();
 
@@ -96,7 +96,7 @@ You can look at the [tests/example.php](https://github.com/jmathai/php-multi-cur
 
 Makes a `GET` call to `$url` by passing the key/value array `$options` as parameters. This method automatically sets `CURLOPT_RETURNTRANSFER` to `1` internally.
 
-```
+```php
 $call = $mc->addUrl('https://www.google.com', array('q' => 'github'));
 echo $call->response;
 ```
@@ -107,7 +107,7 @@ echo $call->response;
 
 Takes a curl handle `$ch` and executes it. This method, unlike `addUrl`, will not add anything to the cURL handle. You'll most likely want to set `CURLOPT_RETURNTRANSFER` yourself before passing the handle into `addCurl`.
 
-```
+```php
 $ch = curl_init('http://www.mocky.io/v2/5185415ba171ea3a00704eed');
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
 
@@ -123,7 +123,7 @@ The curl calls begin executing the moment you call `addUrl` or `addCurl`. Execut
 
 The `response` variable returns the `string` text of the response.
 
-```
+```php
 echo $call->response;
 ```
 
@@ -131,7 +131,7 @@ echo $call->response;
 
 The `code` variable returns the `integer` HTTP response code of the request.
 
-```
+```php
 echo $call->code;
 ```
 
@@ -139,7 +139,7 @@ echo $call->code;
 
 The `headers` variable returns an `array` of HTTP headers from the response.
 
-```
+```php
 var_dump($call->headers);
 ```
 
@@ -147,7 +147,7 @@ var_dump($call->headers);
 
 Return a `string` that prints out details of call latency and degree of being called in parallel. This method can be called indirectly through the multi-curl instance you're using.
 
-```
+```php
 echo $mc->getSequence()->renderAscii();
 ```
 
