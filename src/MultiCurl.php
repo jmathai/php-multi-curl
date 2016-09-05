@@ -43,6 +43,12 @@ class MultiCurl
       'url'   => CURLINFO_EFFECTIVE_URL
       );
   }
+  
+  public function reset(){
+      $this->requests = array();
+      $this->responses = array();
+      self::$timers = array();
+  }
 
   public function addUrl($url, $options = array())
   {
