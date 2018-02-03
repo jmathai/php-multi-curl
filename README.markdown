@@ -152,8 +152,9 @@ echo $mc->getSequence()->renderAscii();
 ```
 
 ## Authors
-   * jmathai
+   * jmathai 
    
 ### Contributors
-   * Lewis Cowles (LewisCowles1986) - Usability for adding url's without needing to worry about CURL, but provisioning also for specifying additional parameters
-   * Sam Thomson (samthomson) - Packaged it up
+   * Lewis Cowles  ([LewisCowles1986](https://github.com/LewisCowles1986)) - Usability for adding url's without needing to worry about CURL, but provisioning also for specifying additional parameters
+   * Sam Thomson ([Samthomson](https://github.com/samthomson)) - Packaged it up
+   * Sławek Kaleta ([Dusta](https://github.com/dusta)) - Updated it up
