@@ -1,11 +1,10 @@
 <?php 
 namespace JMathai\PhpMultiCurl;
-/*if(!class_exists('MultiCurlManager'))
-  include 'MultiCurlManager.php';
-if(!class_exists('MultiCurlSequence'))
-  include 'MultiCurlSequence.php';
-if(!class_exists('MultiCurlException'))
-  include 'MultiCurlException.php';*/
+
+use JMathai\PhpMultiCurl\MultiCurlManager;
+use JMathai\PhpMultiCurl\MultiCurlSequence;
+use JMathai\PhpMultiCurl\MultiCurlException;
+use JMathai\PhpMultiCurl\MultiCurlInvalidParameterException;
 
 /**
  * MultiCurl multicurl http client
@@ -14,28 +13,28 @@ if(!class_exists('MultiCurlException'))
  */
 class MultiCurl
 {
-    const timeout = 3;
-    private static $inst = null;
+    const TIMEOUT = 3;
+    private static $_inst = null;
     /* @TODO make this private and add a method to set it to 0 */
     public static $singleton = 0;
 
-    private $mc;
-    private $running;
-    private $execStatus;
-    private $sleepIncrement = 1.1;
-    private $requests = array();
-    private $responses = array();
-    private $properties = array();
-    private static $timers = array();
+    private $_mc;
+    private $_running;
+    private $_execStatus;
+    private $_sleepIncrement = 1.1;
+    private $_requests = array();
+    private $_responses = array();
+    private $_properties = array();
+    private static $_timers = array();
 
     public function __construct()
     {
-        if(self::$singleton === 0) {
+        if (self::$singleton === 0) {
             throw new MultiCurlException('This class cannot be instantiated by the new keyword.  You must instantiate it using: $obj = MultiCurl::getInstance();');
         }
 
-        $this->mc = curl_multi_init();
-        $this->properties = array(
+        $this->_mc = curl_multi_init();
+        $this->_properties = array(
         'code'  => CURLINFO_HTTP_CODE,
         'time'  => CURLINFO_TOTAL_TIME,
         'length'=> CURLINFO_CONTENT_LENGTH_DOWNLOAD,
@@ -46,17 +45,16 @@ class MultiCurl
   
     public function reset()
     {
-        $this->requests = array();
-        $this->responses = array();
-        self::$timers = array();
+        $this->_requests = array();
+        $this->_responses = array();
+        self::$_timers = array();
     }
 
     public function addUrl($url, $options = array())
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        foreach($options as $option=>$value)
-        {
+        foreach ($options as $option=>$value) {
             curl_setopt($ch, $option, $value);
         }
         return $this->addCurl($ch);
@@ -64,65 +62,61 @@ class MultiCurl
 
     public function addCurl($ch)
     {
-        if(gettype($ch) !== 'resource') {
+        if (gettype($ch) !== 'resource') {
             throw new MultiCurlInvalidParameterException('Parameter must be a valid curl handle');
         }
 
-        $key = $this->getKey($ch);
-        $this->requests[$key] = $ch;
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, 'headerCallback'));
+        $key = $this->_getKey($ch);
+        $this->_requests[$key] = $ch;
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, '_headerCallback'));
 
-        $code = curl_multi_add_handle($this->mc, $ch);
-        $this->startTimer($key);
+        $code = curl_multi_add_handle($this->_mc, $ch);
+        $this->_startTimer($key);
     
         // (1)
-        if($code === CURLM_OK || $code === CURLM_CALL_MULTI_PERFORM) {
-            do
-            {
-                $this->execStatus = curl_multi_exec($this->mc, $this->running);
-            } while ($this->execStatus === CURLM_CALL_MULTI_PERFORM);
+        if ($code === CURLM_OK || $code === CURLM_CALL_MULTI_PERFORM) {
+            do {
+                $this->_execStatus = curl_multi_exec($this->_mc, $this->_running);
+            } while ($this->_execStatus === CURLM_CALL_MULTI_PERFORM);
 
             return new MultiCurlManager($key);
-        }
-        else
-        {
+        } else {
             return $code;
         }
     }
 
     public function getResult($key = null)
     {
-        if($key != null) {
-            if(isset($this->responses[$key]['code'])) {
-                return $this->responses[$key];
+        if ($key != null) {
+            if (isset($this->_responses[$key]['code'])) {
+                return $this->_responses[$key];
             }
 
             $innerSleepInt = $outerSleepInt = 1;
-            while($this->running && ($this->execStatus == CURLM_OK || $this->execStatus == CURLM_CALL_MULTI_PERFORM))
-            {
+            while ($this->_running && ($this->_execStatus == CURLM_OK || $this->_execStatus == CURLM_CALL_MULTI_PERFORM)) {
                 usleep(intval($outerSleepInt));
-                $outerSleepInt = intval(max(1, ($outerSleepInt*$this->sleepIncrement)));
-                $ms=curl_multi_select($this->mc, 0);
+                $outerSleepInt = intval(max(1, ($outerSleepInt*$this->_sleepIncrement)));
+                $ms=curl_multi_select($this->_mc, 0);
 
                 // bug in PHP 5.3.18+ where curl_multi_select can return -1
                 // https://bugs.php.net/bug.php?id=63411
-                if($ms === -1) {
+                if ($ms === -1) {
                     usleep(100000);
                 }
 
                 // see pull request https://github.com/jmathai/php-multi-curl/pull/17
                 // details here http://curl.haxx.se/libcurl/c/libcurl-errors.html
-                if($ms >= CURLM_CALL_MULTI_PERFORM) {
-                    do{
-                        $this->execStatus = curl_multi_exec($this->mc, $this->running);
+                if ($ms >= CURLM_CALL_MULTI_PERFORM) {
+                    do {
+                        $this->_execStatus = curl_multi_exec($this->_mc, $this->_running);
                         usleep(intval($innerSleepInt));
-                        $innerSleepInt = intval(max(1, ($innerSleepInt*$this->sleepIncrement)));
-                    }while($this->execStatus==CURLM_CALL_MULTI_PERFORM);
+                        $innerSleepInt = intval(max(1, ($innerSleepInt*$this->_sleepIncrement)));
+                    } while ($this->_execStatus==CURLM_CALL_MULTI_PERFORM);
                     $innerSleepInt = 1;
                 }
-                $this->storeResponses();
-                if(isset($this->responses[$key]['data'])) {
-                    return $this->responses[$key];
+                $this->_storeResponses();
+                if (isset($this->_responses[$key]['data'])) {
+                    return $this->_responses[$key];
                 }
             }
             return null;
@@ -132,12 +126,12 @@ class MultiCurl
 
     public static function getSequence()
     {
-        return new MultiCurlSequence(self::$timers);
+        return new MultiCurlSequence(self::$_timers);
     }
 
     public static function getTimers()
     {
-        return self::$timers;
+        return self::$_timers;
     }
 
     public function inject($key, $value)
@@ -145,74 +139,73 @@ class MultiCurl
         $this->$key = $value;
     }
 
-    private function getKey($ch)
+    private function _getKey($ch)
     {
         return (string)$ch;
     }
 
-    private function headerCallback($ch, $header)
+    private function _headerCallback($ch, $header)
     {
         $_header = trim($header);
         $colonPos= strpos($_header, ':');
-        if($colonPos > 0) {
+        if ($colonPos > 0) {
             $key = substr($_header, 0, $colonPos);
             $val = preg_replace('/^\W+/', '', substr($_header, $colonPos));
-            $this->responses[$this->getKey($ch)]['headers'][$key] = $val;
+            $this->_responses[$this->_getKey($ch)]['headers'][$key] = $val;
         }
         return strlen($header);
     }
 
-    private function storeResponses()
+    private function _storeResponses()
     {
-        while($done = curl_multi_info_read($this->mc))
-        {
-            $this->storeResponse($done);
+        while ($done = curl_multi_info_read($this->_mc)) {
+            $this->_storeResponse($done);
         }
     }
 
-    private function storeResponse($done, $isAsynchronous = true)
+    private function _storeResponse($done, $isAsynchronous = true)
     {
-        $key = $this->getKey($done['handle']);
-        $this->stopTimer($key, $done);
-        if($isAsynchronous) {
-            $this->responses[$key]['data'] = curl_multi_getcontent($done['handle']);
+        $key = $this->_getKey($done['handle']);
+        $this->_stopTimer($key, $done);
+        if ($isAsynchronous) {
+            $this->_responses[$key]['data'] = curl_multi_getcontent($done['handle']);
         } else {
-            $this->responses[$key]['data'] = curl_exec($done['handle']);
+            $this->_responses[$key]['data'] = curl_exec($done['handle']);
         }
 
-        $this->responses[$key]['response'] = $this->responses[$key]['data'];
+        $this->_responses[$key]['response'] = $this->_responses[$key]['data'];
 
-        foreach($this->properties as $name => $const)
-        {
-            $this->responses[$key][$name] = curl_getinfo($done['handle'], $const);
+        foreach ($this->_properties as $name => $const) {
+            $this->_responses[$key][$name] = curl_getinfo($done['handle'], $const);
         }
-        if($isAsynchronous) {
-            curl_multi_remove_handle($this->mc, $done['handle']);
+
+        if ($isAsynchronous) {
+            curl_multi_remove_handle($this->_mc, $done['handle']);
         }
         curl_close($done['handle']);
     }
 
-    private function startTimer($key)
+    private function _startTimer($key)
     {
-        self::$timers[$key]['start'] = microtime(true);
+        self::$_timers[$key]['start'] = microtime(true);
     }
 
-    private function stopTimer($key, $done)
+    private function _stopTimer($key, $done)
     {
-        self::$timers[$key]['end'] = microtime(true);
-        self::$timers[$key]['api'] = curl_getinfo($done['handle'], CURLINFO_EFFECTIVE_URL);
-        self::$timers[$key]['time'] = curl_getinfo($done['handle'], CURLINFO_TOTAL_TIME);
-        self::$timers[$key]['code'] = curl_getinfo($done['handle'], CURLINFO_HTTP_CODE);
+        self::$_timers[$key]['end'] = microtime(true);
+        self::$_timers[$key]['api'] = curl_getinfo($done['handle'], CURLINFO_EFFECTIVE_URL);
+        self::$_timers[$key]['time'] = curl_getinfo($done['handle'], CURLINFO_TOTAL_TIME);
+        self::$_timers[$key]['code'] = curl_getinfo($done['handle'], CURLINFO_HTTP_CODE);
     }
 
     public static function getInstance()
     {
-        if(self::$inst == null) {
+        if (self::$_inst == null) {
             self::$singleton = 1;
-            self::$inst = new MultiCurl();
+            self::$_inst = new MultiCurl();
         }
-
-        return self::$inst;
+        
+        return self::$_inst;
     }
 }
 

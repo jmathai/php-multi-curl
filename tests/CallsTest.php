@@ -13,10 +13,10 @@ class CallsTest extends PHPUnit_Framework_TestCase
 
     public function testGetCode200()
     { 
-       $mc = MultiCurl::getInstance();
-       $github = $mc->addUrl('https://github.com');
+        $mc = MultiCurl::getInstance();
+        $github = $mc->addUrl('https://github.com');
     
-       $this->assertEquals(200, $github->code);
+        $this->assertEquals(200, $github->code);
     }
 
     public function testGetCode404()

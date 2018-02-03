@@ -7,18 +7,18 @@ namespace JMathai\PhpMultiCurl;
  */
 class MultiCurlManager
 {
-    private $key;
-    private $epiCurl;
+    private $_key;
+    private $_epiCurl;
 
     public function __construct($key)
     {
-        $this->key = $key;
-        $this->epiCurl = MultiCurl::getInstance();
+        $this->_key = $key;
+        $this->_epiCurl = MultiCurl::getInstance();
     }
 
     public function __get($name)
     {
-        $responses = $this->epiCurl->getResult($this->key);
+        $responses = $this->_epiCurl->getResult($this->_key);
         return isset($responses[$name]) ? $responses[$name] : null;
     }
 
