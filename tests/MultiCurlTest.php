@@ -6,7 +6,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
     public function testConstructorThrowsExceptionWhenInvokedWithNew()
     {
         MultiCurl::$singleton = 0;
-        $this->setExpectedException('JMathai\PhpMultiCurl\MultiCurlException');
+        $this->setExpectedException('JMathai\PhpMultiCurl\MultiException');
         new MultiCurl();
     }
 
@@ -19,7 +19,7 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
     {
         $mc = MultiCurl::getInstance();
         $res = $mc->addUrl('http://google.com');
-        $this->assertInstanceOf('Jmathai\PhpMultiCurl\MultiCurlManager', $res);
+        $this->assertInstanceOf('Jmathai\PhpMultiCurl\Manager', $res);
     }
 
     public function testAddCurl()
@@ -29,12 +29,12 @@ class MultiCurlTest extends PHPUnit_Framework_TestCase
 
         $mc = MultiCurl::getInstance();
         $res = $mc->addCurl($ch);
-        $this->assertInstanceOf('Jmathai\PhpMultiCurl\MultiCurlManager', $res);
+        $this->assertInstanceOf('Jmathai\PhpMultiCurl\Manager', $res);
     }
 
     public function testAddCurlWithNull()
     {
-        $this->setExpectedException('JMathai\PhpMultiCurl\MultiCurlInvalidParameterException');
+        $this->setExpectedException('JMathai\PhpMultiCurl\MultiInvalidParameterException');
         $mc = MultiCurl::getInstance();
         $res = $mc->addCurl(null);
     }

@@ -1,11 +1,11 @@
 <?php 
 namespace JMathai\PhpMultiCurl;
 /**
- * MultiCurlManager manages multicurl handles
+ * Manager manages multicurl handles
  *
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class MultiCurlManager
+class Manager
 {
     private $_key;
     private $_epiCurl;

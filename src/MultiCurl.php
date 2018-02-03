@@ -1,10 +1,10 @@
 <?php 
 namespace JMathai\PhpMultiCurl;
 
-use JMathai\PhpMultiCurl\MultiCurlManager;
-use JMathai\PhpMultiCurl\MultiCurlSequence;
-use JMathai\PhpMultiCurl\MultiCurlException;
-use JMathai\PhpMultiCurl\MultiCurlInvalidParameterException;
+use JMathai\PhpMultiCurl\Manager;
+use JMathai\PhpMultiCurl\Sequence;
+use JMathai\PhpMultiCurl\MultiException;
+use JMathai\PhpMultiCurl\MultiInvalidParameterException;
 
 /**
  * MultiCurl multicurl http client
@@ -30,7 +30,7 @@ class MultiCurl
     public function __construct()
     {
         if (self::$singleton === 0) {
-            throw new MultiCurlException('This class cannot be instantiated by the new keyword.  You must instantiate it using: $obj = MultiCurl::getInstance();');
+            throw new MultiException('This class cannot be instantiated by the new keyword.  You must instantiate it using: $obj = MultiCurl::getInstance();');
         }
 
         $this->_mc = curl_multi_init();
@@ -63,7 +63,7 @@ class MultiCurl
     public function addCurl($ch)
     {
         if (gettype($ch) !== 'resource') {
-            throw new MultiCurlInvalidParameterException('Parameter must be a valid curl handle');
+            throw new MultiInvalidParameterException('Parameter must be a valid curl handle');
         }
 
         $key = $this->_getKey($ch);
@@ -79,7 +79,7 @@ class MultiCurl
                 $this->_execStatus = curl_multi_exec($this->_mc, $this->_running);
             } while ($this->_execStatus === CURLM_CALL_MULTI_PERFORM);
 
-            return new MultiCurlManager($key);
+            return new Manager($key);
         } else {
             return $code;
         }
@@ -126,7 +126,7 @@ class MultiCurl
 
     public static function getSequence()
     {
-        return new MultiCurlSequence(self::$_timers);
+        return new Sequence(self::$_timers);
     }
 
     public static function getTimers()
