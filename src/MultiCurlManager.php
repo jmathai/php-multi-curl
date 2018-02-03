@@ -1,4 +1,5 @@
-<?php namespace JMathai\PhpMultiCurl;
+<?php 
+namespace JMathai\PhpMultiCurl;
 /**
  * MultiCurlManager manages multicurl handles
  *
@@ -6,24 +7,24 @@
  */
 class MultiCurlManager
 {
-  private $key;
-  private $epiCurl;
+    private $key;
+    private $epiCurl;
 
-  public function __construct($key)
-  {
-    $this->key = $key;
-    $this->epiCurl = MultiCurl::getInstance();
-  }
+    public function __construct($key)
+    {
+        $this->key = $key;
+        $this->epiCurl = MultiCurl::getInstance();
+    }
 
-  public function __get($name)
-  {
-    $responses = $this->epiCurl->getResult($this->key);
-    return isset($responses[$name]) ? $responses[$name] : null;
-  }
+    public function __get($name)
+    {
+        $responses = $this->epiCurl->getResult($this->key);
+        return isset($responses[$name]) ? $responses[$name] : null;
+    }
 
-  public function __isset($name)
-  {
-    $val = self::__get($name);
-    return empty($val);
-  }
+    public function __isset($name)
+    {
+        $val = self::__get($name);
+        return empty($val);
+    }
 }
