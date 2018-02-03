@@ -85,7 +85,7 @@ You'll most likely want to configure your cURL calls for your specific purpose. 
   $code = $call->code;
 ```
 
-You can look at the [tests/example.php](https://github.com/jmathai/php-multi-curl/blob/master/src/example.php) file for working code and execute it from the command line.
+You can look at the [example.php](https://github.com/jmathai/php-multi-curl/blob/master/example.php) file for working code and execute it from the command line.
 
 ## Documentation
 
