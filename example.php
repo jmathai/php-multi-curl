@@ -1,9 +1,10 @@
 #!/usr/bin/env php
 <?php
-if (php_sapi_name() !== 'cli')
-  die();
+if (php_sapi_name() !== 'cli') {
+    die();
+}
 
-require '../vendor/autoload.php';
+require 'vendor/autoload.php';
 $mc = JMathai\PhpMultiCurl\MultiCurl::getInstance();
 
 $ch1 = curl_init('http://www.yahoo.com');

@@ -39,9 +39,9 @@ Basic usage can be done using the `addUrl($url/*, $options*/)` method. This call
   $mc = JMathai\PhpMultiCurl\MultiCurl::getInstance();
 
   // Make a call to a URL.
-  $call1 = $mc->addUrl('http://slowapi.herokuapp.com/delay/2.0');
+  $call1 = $mc->addUrl('http://slowwly.robertomurray.co.uk/delay/2000/url/http://www.google.com');
   // Make another call to a URL.
-  $call2 = $mc->addUrl('http://slowapi.herokuapp.com/delay/1.0');
+  $call2 = $mc->addUrl('http://slowwly.robertomurray.co.uk/delay/1000/url/http://www.google.com');
 
   // Access the response for $call2.
   // This blocks until $call2 is complete without waiting for $call1
@@ -59,9 +59,9 @@ This is what the output of that code will look like.
 ```
 Call 2: consequatur id est
 Call 1: in maiores et
-(http://slowapi.herokuapp.com/delay/2.0 ::  code=200, start=1447701285.5536, end=1447701287.9512, total=2.397534)
+(http://slowwly.robertomurray.co.uk/delay/2000/url/http://www.google.com ::  code=200, start=1447701285.5536, end=1447701287.9512, total=2.397534)
 [====================================================================================================]
-(http://slowapi.herokuapp.com/delay/1.0 ::  code=200, start=1447701285.5539, end=1447701287.0871, total=1.532997)
+(http://slowwly.robertomurray.co.uk/delay/1000/url/http://www.google.com ::  code=200, start=1447701285.5539, end=1447701287.0871, total=1.532997)
 [================================================================                                    ]
 ```
 
@@ -85,7 +85,7 @@ You'll most likely want to configure your cURL calls for your specific purpose. 
   $code = $call->code;
 ```
 
-You can look at the [tests/example.php](https://github.com/jmathai/php-multi-curl/blob/master/src/example.php) file for working code and execute it from the command line.
+You can look at the [example.php](https://github.com/jmathai/php-multi-curl/blob/master/example.php) file for working code and execute it from the command line.
 
 ## Documentation
 
@@ -152,8 +152,9 @@ echo $mc->getSequence()->renderAscii();
 ```
 
 ## Authors
-   * jmathai
+   * jmathai 
    
 ### Contributors
-   * Lewis Cowles (LewisCowles1986) - Usability for adding url's without needing to worry about CURL, but provisioning also for specifying additional parameters
-   * Sam Thomson (samthomson) - Packaged it up
+   * Lewis Cowles  ([LewisCowles1986](https://github.com/LewisCowles1986)) - Usability for adding url's without needing to worry about CURL, but provisioning also for specifying additional parameters
+   * Sam Thomson ([Samthomson](https://github.com/samthomson)) - Packaged it up
+   * Sławek Kaleta ([Dusta](https://github.com/dusta)) - Updated it up
